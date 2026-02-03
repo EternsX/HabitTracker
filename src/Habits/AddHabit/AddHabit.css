@@ -1,0 +1,33 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    /* space between button and form */
+    align-items: flex-end;
+    margin-left: auto;
+    padding-right: 20px;
+}
+
+/* .open-form {
+    margin-right: 10px;
+} */
+
+.habit-form {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.habit-form.active {
+    display: flex;
+}
+
+.freq {
+    text-align: center;
+}
+
+.inputs {
+    display: flex;
+    gap: 5px;
+}

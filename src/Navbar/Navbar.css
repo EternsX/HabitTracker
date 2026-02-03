@@ -1,0 +1,12 @@
+.nav-bar {
+    padding: 8px 25px;
+    margin: 0;
+}
+
+.title {
+    color: rgb(214, 209, 209);
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 18px;
+    cursor: default;
+}

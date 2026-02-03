@@ -1,0 +1,54 @@
+.habit {
+    margin: 5px 0;
+}
+
+.habit button {
+    background: none;
+    border: none;
+    border-radius: 3px;
+    background-color: rgba(162, 14, 24, 0.792);
+    padding-bottom: 2px;
+    margin-left: 9px;
+}
+
+
+.habit button:hover {
+    cursor: pointer;
+    background-color: rgba(181, 15, 26, 0.553);
+}
+
+.habit input {
+  background-color: #1f3a57;      /* slightly lighter than body */
+  color: #ffffff;                 /* text color */
+  border: 1px solid #4a90e2;      /* subtle blue border */
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
+  outline: none;                  /* remove default outline */
+  margin-right: 3px;
+  width: 100px;
+  transition: border 0.2s;
+}
+
+.habit input:focus {
+  border-color: #1abc9c;          /* bright accent color */
+  box-shadow: 0 0 3px #1abc9c;
+}
+
+.habit select {
+  background-color: #1f3a57;
+  color: #ffffff;
+  border: 1px solid #4a90e2;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 14px;
+  outline: none;
+  appearance: none; /* removes default arrow on some browsers */
+  transition: border 0.2s;
+}
+
+.habit select:focus {
+  border-color: #1abc9c;
+  box-shadow: 0 0 3px #1abc9c;
+}
+
