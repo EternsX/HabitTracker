@@ -15,20 +15,20 @@ export default function Habits({ habits, delHabit, updateHabit }) {
     }
 
     const update = (id, habit, freq) => {
+        if (!habit.trim()) return
         updateHabit(id, habit, freq)
         setEditingId(null)
-
     }
 
     return (
         <ul>
             {habits.map(h =>
-                <li key={h.id} className="habit">
-                    {editingId === h.id ? (
+                <li key={h._id} className="habit">
+                    {editingId === h._id ? (
                         <>
-                            <input name={h.habit} onChange={(e) => setEditingValue(e.target.value)} type="text" value={editingValue} />
+                            <input name="habit" onChange={(e) => setEditingValue(e.target.value)} type="text" value={editingValue} />
                             <select
-                                name={h.habit}
+                                name="frequency"
                                 value={editingFrequency}
                                 onChange={(e) => setEditingFrequency(Number(e.target.value))}>
                                 {selectOptions.map((option) => (
@@ -47,24 +47,24 @@ export default function Habits({ habits, delHabit, updateHabit }) {
                     <span className="habit-status">
                         {h.completed ? 'Done' : 'Not done'}
                     </span>
-                    
-                    {editingId === h.id 
-                    ?
+
+                    {editingId === h._id
+                        ?
                         <>
-                            <button className="delete" onClick={() => delHabit(h.id)}>x</button>
-                            <button onClick={() => update(h.id, editingValue, editingFrequency)} className='submit-update'>K</button>
+                            <button className="delete" onClick={() => delHabit(h._id)}>✖</button>
+                            <button onClick={() => update(h._id, editingValue, editingFrequency)} className='submit-update'>💾</button>
                             <button onClick={() => setEditingId(null)} className='cancel-update'>C</button>
                         </>
-                    :
+                        :
                         <button className="update"
                             onClick={() => {
-                                setEditingId(h.id !== editingId ? h.id : null)
+                                setEditingId(h._id)
                                 setEditingValue(h.habit)
                                 setEditingFrequency(h.frequency)
                             }}
-                        >!</button>
+                        >✏</button>
                     }
-            </li>
+                </li>
             )}
         </ul >
     )
