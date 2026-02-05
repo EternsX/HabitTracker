@@ -3,6 +3,7 @@ import AddHabit from './Habits/AddHabit/AddHabit'
 import { useState, useEffect } from 'react'
 import './Body.css'
 
+
 const API_URL = 'http://localhost:3001/habits'
 
 export default function Body() {

@@ -1,0 +1,34 @@
+/* dark overlay */
+.background {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* modal card */
+.form-wrapper {
+  background: #132d43;
+  padding: 24px 28px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* title */
+.form-wrapper h2 {
+  margin: 0 0 16px;
+  text-align: center;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
