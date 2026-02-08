@@ -1,7 +1,7 @@
 import './Navbar.css'
 import Button from '@mui/material/Button'
 
-export default function Navbar({ openRegister, openLogin }) {
+export default function Navbar({ openRegister, openLogin, user, logout }) {
 
     return (
         <>
@@ -9,18 +9,29 @@ export default function Navbar({ openRegister, openLogin }) {
                 <span className="title">Habit Tracker</span>
 
                 <div className="nav-actions">
-                    <Button
-                        variant="outlined"
-                        onClick={openLogin}
-                    >
-                        Login
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        onClick={openRegister}
-                    >
-                        Register
-                    </Button>
+                    {!user ?
+                        <>
+                            <Button
+                                variant="outlined"
+                                onClick={openLogin}
+                            >
+                                Login
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                onClick={openRegister}
+                            >
+                                Register
+                            </Button>
+                        </> :
+                            <Button
+                                variant="outlined"
+                                onClick={logout}
+                            >
+                                Logout
+                            </Button>
+                    }
+
                 </div>
             </div>
         </>

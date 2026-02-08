@@ -8,34 +8,37 @@ import { useState } from 'react';
 const API_URL = 'http://localhost:3001/login'
 
 
-export default function LoginForm({ closeLogin }) {
+export default function LoginForm({ closeLogin, onLoginSuccess  }) {
     const [username, setUsername] = useState('')
-        const [password, setPassword] = useState('')
-    
-    
-        const handleSubmit = async (e) => {
-            e.preventDefault();
-    
-            try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                })
-    
-                const data = await res.json()
-                if (!res.ok) {
-                    throw new Error(data.error || 'Registration failed')
-                }
-                closeLogin()
-            } catch (err) {
-                console.error(err.message)
+    const [password, setPassword] = useState('')
+
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const res = await fetch('http://localhost:3001/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include', // 👈 REQUIRED
+                body: JSON.stringify({ username, password }),
+            })
+
+
+            const data = await res.json()
+            if (!res.ok) {
+                throw new Error(data.error || 'Registration failed')
             }
+            await onLoginSuccess()
+            closeLogin()
+        } catch (err) {
+            console.error(err.message)
         }
-    
+    }
+
     return (
         <div className="background" onClick={closeLogin}>
-            <div className="form-wrapper" onClick={(e) => e.stopPropagation()}> 
+            <div className="form-wrapper" onClick={(e) => e.stopPropagation()}>
                 <h2>Login</h2>
                 <form className='register-form' onSubmit={handleSubmit}>
                     <TextField

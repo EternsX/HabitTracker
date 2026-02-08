@@ -4,7 +4,12 @@ import cors from 'cors';
 import Habit from './models/Habit.js';
 import User from './models/user.js'
 import bcrypt from 'bcrypt';
+import cookieParser from 'cookie-parser'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
 
+dotenv.config()
+console.log('JWT_SECRET:', process.env.JWT_SECRET)
 const app = express();
 
 // ====== CORS ======
@@ -16,11 +21,51 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(cookieParser());
 
 // ====== MongoDB ======
 mongoose.connect('mongodb://127.0.0.1:27017/habit-tracker')
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error(err));
+
+
+const authMiddleware = (req, res, next) => {
+  const token = req.cookies.auth_token
+  if (!token) return res.status(401).json({ error: 'Not logged in' })
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    req.user = decoded
+    next()
+  } catch {
+    res.status(401).json({ error: 'Invalid token' })
+  }
+}
+
+app.get('/me', (req, res) => {
+  const token = req.cookies.auth_token
+  if (!token) {
+    return res.json({ user: null })
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    res.json({ user: decoded })
+  } catch {
+    res.json({ user: null })
+  }
+})
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('auth_token', {
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
+  })
+  res.json({ message: 'Logged out' })
+})
+
+
 
 // ====== Routes ======
 app.post('/register', async (req, res) => {
@@ -48,12 +93,25 @@ app.post('/login', async (req, res) => {
     return res.status(401).json({ error: 'Invalid credentials' })
   }
 
-  const isMatch = await bcrypt.compare(password, user.password)
-  if (!isMatch) {
+  const match = await bcrypt.compare(password, user.password)
+  if (!match) {
     return res.status(401).json({ error: 'Invalid credentials' })
   }
 
-  res.json({ message: 'Login successful', userId: user._id })
+  const token = jwt.sign(
+    { userId: user._id, username: user.username },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  )
+
+  res.cookie('auth_token', token, {
+    httpOnly: true,
+    secure: false, // true in production (HTTPS)
+    sameSite: 'lax',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  })
+
+  res.json({ message: 'Logged in' })
 })
 
 app.get('/habits', async (req, res) => {

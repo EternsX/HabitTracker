@@ -7,30 +7,45 @@ import { useState } from 'react';
 
 const API_URL = 'http://localhost:3001/register'
 
-export default function RegisterForm({ closeRegister }) {
+export default function RegisterForm({ closeRegister, onRegisterSuccess }) {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
 
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
 
         try {
-            const res = await fetch(API_URL, {
+            // 1️⃣ Register user
+            const res = await fetch('http://localhost:3001/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password }),
             })
 
             const data = await res.json()
-            if (!res.ok) {
-                throw new Error(data.error || 'Registration failed')
-            }
+            if (!res.ok) throw new Error(data.error || 'Registration failed')
+
+            // 2️⃣ Immediately login
+            const loginRes = await fetch('http://localhost:3001/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ username, password }),
+            })
+
+            const loginData = await loginRes.json()
+            if (!loginRes.ok) throw new Error(loginData.error || 'Login failed')
+
+            // 3️⃣ Update App state
+            await onRegisterSuccess() // <-- same as fetchMe
             closeRegister()
+
         } catch (err) {
             console.error(err.message)
         }
     }
+
 
     return (
         <div className="background" onClick={closeRegister}>
