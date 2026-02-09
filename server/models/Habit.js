@@ -1,6 +1,10 @@
 import mongoose from 'mongoose'
 
 const habitSchema = new mongoose.Schema({
+    userId: {
+        type: String,
+        required: true
+    },
     habit: {
         type: String,
         required: true

@@ -9,7 +9,6 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 
 dotenv.config()
-console.log('JWT_SECRET:', process.env.JWT_SECRET)
 const app = express();
 
 // ====== CORS ======
@@ -31,7 +30,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/habit-tracker')
 
 const authMiddleware = (req, res, next) => {
   const token = req.cookies.auth_token
-  if (!token) return res.status(401).json({ error: 'Not logged in' })
+  if (!token) {
+    return res.status(401).json({ error: 'Not logged in' })
+  } 
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
@@ -114,36 +115,38 @@ app.post('/login', async (req, res) => {
   res.json({ message: 'Logged in' })
 })
 
-app.get('/habits', async (req, res) => {
+app.get('/habits', authMiddleware, async (req, res) => {
   try {
-    const habits = await Habit.find();
+    const habits = await Habit.find({userId: req.user.userId});
     res.json(habits);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.post('/habits', async (req, res) => {
+app.post('/habits', authMiddleware, async (req, res) => {
+  console.log(req.user)
   try {
-    const habit = await Habit.create(req.body);
+    const habit = await Habit.create({...req.body, userId: req.user.userId});
+    console.log(habit)
     res.status(201).json(habit);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.put('/habits/:id', async (req, res) => {
+app.put('/habits/:id', authMiddleware, async (req, res) => {
   try {
-    const habit = await Habit.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const habit = await Habit.findOneAndUpdate({_id: req.params.id, userId: req.user.userId}, req.body, { new: true });
     res.json(habit);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.delete('/habits/:id', async (req, res) => {
+app.delete('/habits/:id', authMiddleware, async (req, res) => {
   try {
-    await Habit.findByIdAndDelete(req.params.id);
+    await Habit.findOneAndDelete({_id: req.params.id, userId: req.user.userId});
     res.sendStatus(204);
   } catch (err) {
     res.status(500).json({ error: err.message });

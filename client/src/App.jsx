@@ -41,7 +41,7 @@ function App() {
   return (
     <>
       <Navbar openRegister={() => setRegisterIsOpen(true)} openLogin={() => setLoginIsOpen(true)} user={user} logout={logout} />
-      <Body />
+      <Body user={user}/>
 
       {registerIsOpen && <RegisterForm closeRegister={() => setRegisterIsOpen(false)} onRegisterSuccess={fetchMe} />}
       {loginIsOpen && <LoginForm closeLogin={() => setLoginIsOpen(false)} onLoginSuccess={fetchMe} />}

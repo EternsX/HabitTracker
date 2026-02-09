@@ -6,19 +6,37 @@ import './Body.css'
 
 const API_URL = 'http://localhost:3001/habits'
 
-export default function Body() {
+export default function Body({ user }) {
     const [habits, setHabits] = useState([])
 
     useEffect(() => {
-        fetch(API_URL)
-            .then(res => res.json())
-            .then(data => setHabits(data))
-            .catch(err => console.error(err))
-    }, [])
+        if (!user) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setHabits([])  
+            return
+        }
+
+        const fetchHabits = async () => {
+            const res = await fetch('http://localhost:3001/habits', {
+                credentials: 'include'
+            })
+
+            if (!res.ok) {
+                setHabits([])
+                return
+            }
+
+            const data = await res.json()
+            setHabits(data)
+        }
+
+        fetchHabits()
+    }, [user])
 
     const delHabit = async (id) => {
         await fetch(`${API_URL}/${id}`, {
             method: 'DELETE',
+            credentials: 'include',
         })
 
         setHabits(prev => prev.filter(h => h._id !== id))
@@ -28,6 +46,7 @@ export default function Body() {
         const res = await fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ habit, frequency, completed: false }),
         })
 
@@ -40,6 +59,7 @@ export default function Body() {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ habit, frequency }),
+            credentials: 'include',
         })
 
         const updatedHabit = await res.json()
@@ -51,7 +71,7 @@ export default function Body() {
 
     return (
         <div className='habits-wrapper'>
-            <Habits habits={habits} delHabit={delHabit} updateHabit={updateHabit} />
+            <Habits user={user} habits={habits} delHabit={delHabit} updateHabit={updateHabit} />
             <AddHabit addHabit={addHabit} />
         </div>
     )
