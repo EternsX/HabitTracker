@@ -1,8 +1,11 @@
 import './Navbar.css'
 import Button from '@mui/material/Button'
+import useModal from '../context/Modals/useModal'
+import useUser from '../context/User/useUser'
 
-export default function Navbar({ openRegister, openLogin, user, logout }) {
-
+export default function Navbar() {
+    const { openRegister, openLogin } = useModal();
+    const { user, logout } = useUser();
     return (
         <>
             <div className="nav-bar">
@@ -24,12 +27,12 @@ export default function Navbar({ openRegister, openLogin, user, logout }) {
                                 Register
                             </Button>
                         </> :
-                            <Button
-                                variant="outlined"
-                                onClick={logout}
-                            >
-                                Logout
-                            </Button>
+                        <Button
+                            variant="outlined"
+                            onClick={logout}
+                        >
+                            Logout
+                        </Button>
                     }
 
                 </div>

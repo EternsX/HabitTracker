@@ -1,8 +1,11 @@
 import './Habits.css'
 import Habit from './Habit/Habit'
+import useHabits from '../context/Habits/useHabits'
+import useUser from '../context/User/useUser'
 
-
-export default function Habits({ user, habits, delHabit, updateHabit }) {
+export default function Habits() {
+    const {habits, delHabit, updateHabit} = useHabits()
+    const { user } = useUser();
     return (
         <ul>
             {user ?  

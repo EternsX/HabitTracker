@@ -14,9 +14,9 @@ const app = express();
 // ====== CORS ======
 // Allow your React app to connect
 app.use(cors({
-  origin: 'http://localhost:5173', // your Vite frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // allowed methods
-  credentials: true // if you want cookies/auth
+  origin: 'http://localhost:5173', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  credentials: true // cookies
 }));
 
 app.use(express.json());
@@ -43,6 +43,7 @@ const authMiddleware = (req, res, next) => {
   }
 }
 
+// ====== Routes ======
 app.get('/me', (req, res) => {
   const token = req.cookies.auth_token
   if (!token) {
@@ -67,8 +68,6 @@ app.post('/logout', (req, res) => {
 })
 
 
-
-// ====== Routes ======
 app.post('/register', async (req, res) => {
   const { username, password } = req.body
 
