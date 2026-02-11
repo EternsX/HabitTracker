@@ -1,0 +1,63 @@
+/* Dark background overlay */
+.background {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal container */
+.form-wrapper {
+  background: #132d43;
+  padding: 2.5rem 2rem;
+  border-radius: 16px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.25s ease-out;
+}
+
+/* Form layout */
+.habit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Input section */
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* Button row */
+.habit-form > div:last-child {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Submit button styling */
+.habit-form button[type="submit"] {
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 10px;
+}
+
+/* Animation */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

@@ -1,6 +1,6 @@
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import './AddHabit.css'
+import './AddHabitModal.css'
 import { useState } from 'react';
 import Button from '@mui/material/Button';
 import textFieldStyles from '../../styles/textFieldStyles';
@@ -11,25 +11,22 @@ export default function AddHabitModal() {
     const [habitName, setHabitName] = useState('')
     const selectOptions = [1, 2, 3, 4, 5, 6, 7]
     const [frequency, setFrequency] = useState(1)
-    const [visibleForm, setVisibleForm] = useState(false)
     const { addHabit } = useHabits();
-    const { clsoeAddHabit } = useModal();
+    const { closeHabitModal, habitModalisOpen } = useModal();
 
     const handleSubmit = (e) => {
         e.preventDefault()
         console.log({ habitName, frequency })
         setHabitName('')
         setFrequency(1)
-        // Later: call parent onAdd function
         addHabit(habitName, frequency)
-        setVisibleForm(false);
+        closeHabitModal();
     }
 
     return (
-        <div className="background" onClick={clsoeAddHabit}>
+        <div className="background" onClick={closeHabitModal}>
             <div className="form-wrapper" onClick={(e) => e.stopPropagation()}>
-                <Button className="open-form" variant="outlined" onClick={() => setVisibleForm(true)}>Add a Habit</Button>
-                <form onSubmit={handleSubmit} className={`habit-form ${visibleForm ? 'active' : ''} `}>
+                <form onSubmit={handleSubmit} className={`habit-form ${habitModalisOpen ? 'active' : ''} `}>
                     <div className='inputs'>
                         <TextField
                             id="habit-name"
@@ -61,7 +58,7 @@ export default function AddHabitModal() {
                         <Button
                             variant="text"
                             color="secondary"
-                            onClick={() => setVisibleForm(false)}
+                            onClick={closeHabitModal}
                         >
                             Cancel
                         </Button>

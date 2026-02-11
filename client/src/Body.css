@@ -1,4 +1,10 @@
-.habits-wrapper {
+.body-wrapper {
     display: flex;
-    flex-direction: row;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+.open-form {
+    margin: auto 0 100px 0;
 }
