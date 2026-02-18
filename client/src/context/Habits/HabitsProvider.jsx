@@ -7,6 +7,7 @@ const API_URL = "http://localhost:3001/habits";
 
 export function HabitsProvider({ children }) {
   const [habits, setHabits] = useState([]);
+  const [editingId, setEditingId] = useState(null)
   const { user, loading } = useUser();
   useEffect(() => {
     if (loading) return;
@@ -77,9 +78,27 @@ export function HabitsProvider({ children }) {
     setHabits(prev => prev.map(h => (h._id) === id ? completedHabit : h))
   }, []);
 
+  const undoComplete = useCallback(async (id) => {
+    const res = await fetch(`${API_URL}/${id}/undo`, {
+      method: "PATCH",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      console.error("Failed to undo habit");
+      return;
+    }
+
+    const updatedHabit = await res.json();
+
+    setHabits(prev =>
+      prev.map(h => h._id === id ? updatedHabit : h)
+    );
+  }, []);
+
   return (
     <HabitsContext.Provider
-      value={{ user, habits, addHabit, delHabit, updateHabit, completeHabit }}
+      value={{ user, habits, addHabit, delHabit, updateHabit, completeHabit, undoComplete, editingId, setEditingId }}
     >
       {children}
     </HabitsContext.Provider>

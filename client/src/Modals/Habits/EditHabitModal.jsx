@@ -7,19 +7,28 @@ import textFieldStyles from '../../styles/textFieldStyles';
 import useHabits from '../../context/Habits/useHabits';
 import useModal from '../../context/Modals/useModal';
 
-export default function UpdateHabitModal(h) {
-    const [habitName, setHabitName] = useState(h.habit)
-    const selectOptions = ["Daily", 1, 2, 3, 4, 5, 6]
-    const [frequency, setFrequency] = useState(h.frequency)
-    const { updateHabit } = useHabits();
+export default function UpdateHabitModal() {
+    const { habits, updateHabit, editingId, setEditingId } = useHabits();
     const { closeEditHabitModal, editHabitModalisOpen } = useModal();
-    console.log(h)
+
+    const h = habits.find(habit => habit._id === editingId);
+
+    const [habitName, setHabitName] = useState("");
+    const [frequency, setFrequency] = useState("");
+
+    const selectOptions = ["Daily", 1, 2, 3, 4, 5, 6];
+
     useEffect(() => {
-        console.log(h)
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setHabitName(h.habit);
-        setFrequency(h.frequency === "Daily" ? "Daily" : String(h.frequency));
-    }, [h]);
+        const habit = habits.find(habit => habit._id === editingId);
+
+        if (habit) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setHabitName(habit.habit);
+            setFrequency(
+                habit.frequency === "Daily" ? "Daily" : String(habit.frequency)
+            );
+        }
+    }, [habits, editingId]);
 
 
     const handleSubmit = (e) => {
@@ -29,6 +38,7 @@ export default function UpdateHabitModal(h) {
         setFrequency('')
         updateHabit(h._id, habitName, frequency)
         closeEditHabitModal();
+        setEditingId(null);
     }
 
     return (
@@ -48,7 +58,6 @@ export default function UpdateHabitModal(h) {
                             select
                             label="Frequency"
                             value={frequency}
-                            displayempty
                             onChange={(e) => {
                                 const value = e.target.value;
                                 setFrequency(value === "Daily" ? "Daily" : Number(value));
@@ -56,9 +65,7 @@ export default function UpdateHabitModal(h) {
                             helperText="Times per Week"
                             sx={textFieldStyles}
                         >
-                            <MenuItem value="" disabled>
-                                <em>Select frequency</em>
-                            </MenuItem>
+                           
                             {selectOptions.map((option) => (
                                 <MenuItem key={option} value={option}>
                                     {option}

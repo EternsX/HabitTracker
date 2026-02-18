@@ -125,16 +125,13 @@ app.get('/habits', authMiddleware, async (req, res) => {
     const habits = await Habit.find({
       userId: new mongoose.Types.ObjectId(req.user.userId)
     });
-    console.log(habits)
     res.json(habits);
   } catch (err) {
-    console.error(err); // log the full error
     res.status(500).json({ error: err.message });
   }
 });
 
 app.post('/habits', authMiddleware, async (req, res) => {
-  console.log({...req.body})
   try {
     const habit = await Habit.create({ ...req.body, userId: new mongoose.Types.ObjectId(req.user.userId) });
     res.status(201).json(habit);
@@ -180,5 +177,29 @@ app.patch('/habits/:id/complete', authMiddleware, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 })
+
+app.patch('/habits/:id/undo', authMiddleware, async (req, res) => {
+  try {
+    const habit = await Habit.findOne({
+      _id: req.params.id,
+      userId: req.user.userId
+    });
+
+    if (!habit) {
+      return res.status(404).json({ message: "Habit not found" });
+    }
+
+    const today = new Date();
+
+    // Remove today's completion
+    habit.completionDates.pop();
+
+    await habit.save();
+
+    res.json(habit);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 app.listen(3001, () => console.log('Server running on port 3001'));

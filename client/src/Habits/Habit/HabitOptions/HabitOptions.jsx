@@ -10,10 +10,12 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import useModal from '../../../context/Modals/useModal'
+import useHabits from "../../../context/Habits/useHabits";
 
 export default function HabitActions({ h, delHabit }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const { openEditHabitModal } = useModal()
+  const { setEditingId } = useHabits();
 
   const open = Boolean(anchorEl);
 
@@ -31,6 +33,7 @@ export default function HabitActions({ h, delHabit }) {
   };
 
   const handleEdit = () => {
+    setEditingId(h._id)
     openEditHabitModal();
     handleClose();
   };

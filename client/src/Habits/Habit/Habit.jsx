@@ -1,25 +1,14 @@
 import './Habit.css';
-import Button from '@mui/material/Button'
-import { completionsThisWeek, checkIfCompleted, calculateStreak } from "../../utils/tracker";
-import useHabits from "../../context/Habits/useHabits";
+import { completionsThisWeek, calculateStreak } from "../../utils/tracker";
 import HabitOptions from "./HabitOptions/HabitOptions"
+import HabitActionButton from './HabitActionButton/HabitActionButton';
+import habitFormatters from '../../utils/habitFormatters';
 
 export default function Habit({ h, delHabit }) {
-    const { completeHabit } = useHabits()
-
     const completions = completionsThisWeek(h?.completionDates ? h.completionDates : [])
-    const isCompleted = checkIfCompleted(h.freq, h.completionDates)
     const streak = calculateStreak(h.completionDates, h.frequency)
-    const isDaily = h.frequency === 'Daily';
-    const unit = isDaily
-        ? (streak === 1 ? 'Day' : 'Days')
-        : (streak === 1 ? 'Week' : 'Weeks');
-
-    const getFrequencyText = (frequency) => {
-        return frequency === "Daily"
-            ? 'Daily'
-            : `${frequency} times per week`
-    }
+    const { getFrequencyText, unit } = habitFormatters(h.frequency, streak)
+    
 
     return (
         <div className="habits">
@@ -33,19 +22,8 @@ export default function Habit({ h, delHabit }) {
                     ></div>
                 ))}
             </div>
-
-            <Button
-                disabled={isCompleted}
-                onClick={() => completeHabit(h._id)}
-                sx={{
-                    "&.Mui-disabled": {
-                        color: "#6c8aa3",             // muted blue text
-                        opacity: .7,                   // prevent default faded look
-                    }
-                }}
-            >
-                {isCompleted ? "Completed" : "Complete"}
-            </Button>
+                
+            <HabitActionButton h={h} />
 
             <span>
                 {streak > 0 ? `${streak} ${unit} Streak` : 'No streak'}

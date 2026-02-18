@@ -14,19 +14,21 @@ export function completionsThisWeek(completionDates) {
   return completed;
 }
 
-export function checkIfCompleted(freq, completionDates) {
+export function isCompletedToday(completionDates) {
   if (!completionDates?.length) return false;
 
   const today = new Date();
-  const lastCompletedDay = new Date(completionDates[completionDates.length - 1]);
-  const completedToday = compareDates(today, lastCompletedDay)
-
-  if (freq === 'Daily') return completedToday;
-
-  return (
-    completedToday ||
-    (completionsThisWeek(completionDates) >= Number(freq))
+  const lastCompleted = new Date(
+    completionDates[completionDates.length - 1]
   );
+
+  return compareDates(today, lastCompleted);
+}
+
+export function isCompletedForWeek(completionDates, required) {
+
+  const res = completionsThisWeek(completionDates)
+  return res >= required;
 }
 
 function completionsOfWeek(completionDates, weekStart, idx) {
