@@ -2,7 +2,8 @@ import mongoose from 'mongoose'
 
 const habitSchema = new mongoose.Schema({
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true
     },
     habit: {
@@ -10,13 +11,13 @@ const habitSchema = new mongoose.Schema({
         required: true
     },
     frequency: {
-        type: Number,
+        type: String,
         required: true
     },
-    completed: {
-        type: Boolean,
-        default: false
+    completionDates: {
+        type: [Date],
+        default: []
     },
-}, { timestamps: true})
+}, { timestamps: true })
 
 export default mongoose.model('Habit', habitSchema)

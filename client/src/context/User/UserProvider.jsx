@@ -3,21 +3,29 @@ import UserContext from "./UserContext";
 
 export default function UserProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true); // <--- new
 
   const fetchUser = async () => {
-    const res = await fetch('http://localhost:3001/me', { credentials: 'include' });
-    if (!res.ok) {
+    setLoading(true); // start loading
+    try {
+      const res = await fetch('http://localhost:3001/me', { credentials: 'include' });
+      if (!res.ok) {
+        setUser(null);
+        return;
+      }
+      const data = await res.json();
+      setUser(data.user);
+    } catch (err) {
+      console.error(err);
       setUser(null);
-      return;
+    } finally {
+      setLoading(false); // done loading
     }
-    const data = await res.json();
-    setUser(data.user);
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchUser();
-  }, [user]);
+    fetchUser(); // only run once
+  }, []); // empty dependency array, not [user]
 
   const logout = async () => {
     await fetch('http://localhost:3001/logout', { method: 'POST', credentials: 'include' });
@@ -25,7 +33,7 @@ export default function UserProvider({ children }) {
   }
 
   return (
-    <UserContext.Provider value={{ user, setUser, fetchUser, logout }}>
+    <UserContext.Provider value={{ user, setUser, fetchUser, logout, loading }}>
       {children}
     </UserContext.Provider>
   );

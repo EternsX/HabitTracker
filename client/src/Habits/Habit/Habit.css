@@ -1,0 +1,39 @@
+.habits {
+    display: flex;
+    align-items: center;
+    width: 600px;
+}
+
+.habit-name {
+    margin-right: 7px;
+}
+
+
+.habit-status {
+    display: flex;
+    border: 1px solid black;
+    margin-left: auto;
+    border-radius: 10px;
+    height: 6px;
+    align-self: center;
+    position: relative;
+    top: 2px;
+    overflow: hidden;   
+    height: 10px;
+}
+
+
+.status-bar {
+    display: inline;
+    width: 18px;
+    border-right: 1px solid black;
+}
+
+.status-bar:last-of-type {
+    border-right: none;
+}
+
+.status-bar.completed {
+    background-color: rgb(23, 107, 23);
+}
+

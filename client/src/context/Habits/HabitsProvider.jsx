@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import HabitsContext from "./HabitsContext.js";
 import useUser from "../User/useUser.js";
+import { useState, useEffect, useCallback } from "react";
+import HabitsContext from "./HabitsContext.js";
 
 const API_URL = "http://localhost:3001/habits";
 
 
 export function HabitsProvider({ children }) {
   const [habits, setHabits] = useState([]);
-  const { user } = useUser();
-
+  const { user, loading } = useUser();
   useEffect(() => {
-    if (!user) {
+    if (loading) return;
+    if (!user?.userId) {  // <-- check userId, not _id
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setHabits([]);
       return;
@@ -20,57 +20,66 @@ export function HabitsProvider({ children }) {
       const res = await fetch(API_URL, {
         credentials: "include",
       });
+
       if (!res.ok) {
         setHabits([]);
         return;
       }
 
       const data = await res.json();
+
       setHabits(data);
     };
 
     fetchHabits();
-  }, [user]);
+  }, [user?.userId, loading]);
 
-  const delHabit = async (id) => {
-    await fetch(`${API_URL}/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+  const delHabit = useCallback(async (id) => {
+    await fetch(`${API_URL}/${id}`, { method: "DELETE", credentials: "include" });
+    setHabits(prev => prev.filter(h => h._id !== id));
+  }, []);
 
-    setHabits((prev) => prev.filter((h) => h._id !== id));
-  };
-
-  const addHabit = async (habit, frequency) => {
+  const addHabit = useCallback(async (habit, frequency) => {
     const res = await fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({ habit, frequency, completed: false }),
     });
-
     const newHabit = await res.json();
-    setHabits((prev) => [...prev, newHabit]);
-  };
+    console.log(newHabit)
+    setHabits(prev => [...prev, newHabit]);
+  }, []);
 
-  const updateHabit = async (id, habit, frequency) => {
+  const updateHabit = useCallback(async (id, habit, frequency) => {
     const res = await fetch(`${API_URL}/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ habit, frequency }),
+    });
+    const updatedHabit = await res.json();
+    setHabits(prev => prev.map(h => (h._id === id ? updatedHabit : h)));
+  }, []);
+
+  const completeHabit = useCallback(async (id) => {
+    const res = await fetch(`${API_URL}/${id}/complete`, {
+      method: "PATCH",
       credentials: "include",
     });
 
-    const updatedHabit = await res.json();
+    if (!res.ok) {
+      console.error("Failed to complete habit");
+      return;
+    }
 
-    setHabits((prev) =>
-      prev.map((h) => (h._id === id ? updatedHabit : h))
-    );
-  };
+    const completedHabit = await res.json();
+    setHabits(prev => prev.map(h => (h._id) === id ? completedHabit : h))
+  }, []);
 
   return (
     <HabitsContext.Provider
-      value={{ user, habits, addHabit, delHabit, updateHabit }}
+      value={{ user, habits, addHabit, delHabit, updateHabit, completeHabit }}
     >
       {children}
     </HabitsContext.Provider>

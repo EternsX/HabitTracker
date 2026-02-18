@@ -2,7 +2,8 @@ import { useState } from "react";
 import ModalContext from "./ModalContext";
 
 export default function ModalProvider({ children }) {
-  const [habitModalisOpen, setHabitModalIsOpen] = useState(false);
+  const [createHabitModalIsOpen, setCreateHabitModalIsOpen] = useState(false);
+  const [editHabitModalIsOpen, setEditHabitModalIsOpen] = useState(false);
   const [registerIsOpen, setRegisterIsOpen] = useState(false);
   const [loginIsOpen, setLoginIsOpen] = useState(false);
 
@@ -11,13 +12,16 @@ export default function ModalProvider({ children }) {
       value={{
         registerIsOpen,
         loginIsOpen,
-        habitModalisOpen,
+        createHabitModalIsOpen,
+        editHabitModalIsOpen,
         openRegister: () => setRegisterIsOpen(true),
         closeRegister: () => setRegisterIsOpen(false),
         openLogin: () => setLoginIsOpen(true),
         closeLogin: () => setLoginIsOpen(false),
-        openHabitModal: () => setHabitModalIsOpen(true),
-        closeHabitModal: () => setHabitModalIsOpen(false),
+        openCreateHabitModal: () => setCreateHabitModalIsOpen(true),
+        closeCreateHabitModal: () => setCreateHabitModalIsOpen(false),
+        openEditHabitModal: () => setEditHabitModalIsOpen(true),
+        closeEditHabitModal: () => setEditHabitModalIsOpen(false),
       }}
     >
       {children}

@@ -1,32 +1,40 @@
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
-import './AddHabitModal.css'
-import { useState } from 'react';
+import './CreateHabitModal.css'
+import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import textFieldStyles from '../../styles/textFieldStyles';
 import useHabits from '../../context/Habits/useHabits';
 import useModal from '../../context/Modals/useModal';
 
-export default function AddHabitModal() {
-    const [habitName, setHabitName] = useState('')
-    const selectOptions = [1, 2, 3, 4, 5, 6, 7]
-    const [frequency, setFrequency] = useState(1)
-    const { addHabit } = useHabits();
-    const { closeHabitModal, habitModalisOpen } = useModal();
+export default function UpdateHabitModal(h) {
+    const [habitName, setHabitName] = useState(h.habit)
+    const selectOptions = ["Daily", 1, 2, 3, 4, 5, 6]
+    const [frequency, setFrequency] = useState(h.frequency)
+    const { updateHabit } = useHabits();
+    const { closeEditHabitModal, editHabitModalisOpen } = useModal();
+    console.log(h)
+    useEffect(() => {
+        console.log(h)
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setHabitName(h.habit);
+        setFrequency(h.frequency === "Daily" ? "Daily" : String(h.frequency));
+    }, [h]);
+
 
     const handleSubmit = (e) => {
         e.preventDefault()
         console.log({ habitName, frequency })
         setHabitName('')
-        setFrequency(1)
-        addHabit(habitName, frequency)
-        closeHabitModal();
+        setFrequency('')
+        updateHabit(h._id, habitName, frequency)
+        closeEditHabitModal();
     }
 
     return (
-        <div className="background" onClick={closeHabitModal}>
+        <div className="background" onClick={closeEditHabitModal}>
             <div className="form-wrapper" onClick={(e) => e.stopPropagation()}>
-                <form onSubmit={handleSubmit} className={`habit-form ${habitModalisOpen ? 'active' : ''} `}>
+                <form onSubmit={handleSubmit} className={`habit-form ${editHabitModalisOpen ? 'active' : ''} `}>
                     <div className='inputs'>
                         <TextField
                             id="habit-name"
@@ -37,15 +45,20 @@ export default function AddHabitModal() {
                             sx={textFieldStyles}
                         />
                         <TextField
-                            id="frequency"
                             select
                             label="Frequency"
-                            className='freq'
                             value={frequency}
+                            displayempty
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                setFrequency(value === "Daily" ? "Daily" : Number(value));
+                            }}
                             helperText="Times per Week"
-                            onChange={(e) => setFrequency(Number(e.target.value))}
                             sx={textFieldStyles}
                         >
+                            <MenuItem value="" disabled>
+                                <em>Select frequency</em>
+                            </MenuItem>
                             {selectOptions.map((option) => (
                                 <MenuItem key={option} value={option}>
                                     {option}
@@ -54,11 +67,11 @@ export default function AddHabitModal() {
                         </TextField>
                     </div>
                     <div>
-                        <Button variant="contained" type='submit'>add</Button>
+                        <Button variant="contained" type='submit'>Update</Button>
                         <Button
                             variant="text"
                             color="secondary"
-                            onClick={closeHabitModal}
+                            onClick={closeEditHabitModal}
                         >
                             Cancel
                         </Button>

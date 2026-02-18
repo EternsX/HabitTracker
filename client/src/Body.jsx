@@ -11,12 +11,12 @@ const buttonStyle = {
 }
 
 export default function Body() {
-    const { openHabitModal } = useModal()
+    const { openCreateHabitModal } = useModal()
     return (
         <div className='body-wrapper'>
             <Habits />
             <div className="open-form" >
-                <Button sx={buttonStyle} size="large" variant="outlined" onClick={() => openHabitModal(true)}>Add a Habit</Button>
+                <Button sx={buttonStyle} size="large" variant="outlined" onClick={() => openCreateHabitModal(true)}>Add a Habit</Button>
             </div>
         </div>
     )

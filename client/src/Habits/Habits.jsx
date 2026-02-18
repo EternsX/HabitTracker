@@ -4,18 +4,18 @@ import useHabits from '../context/Habits/useHabits'
 import useUser from '../context/User/useUser'
 
 export default function Habits() {
-    const {habits, delHabit, updateHabit} = useHabits()
+    const {habits, delHabit, } = useHabits()
     const { user } = useUser();
     return (
         <ul>
             {user ?  
                 habits.map(h =>
                     <li key={h._id} className="habit">
-                        <Habit h={h} delHabit={delHabit} updateHabit={updateHabit}/>
+                        <Habit h={h} delHabit={delHabit} />
                     </li> 
                 )
             : 
-                <p>Login</p>
+                <p></p>
             }
         </ul >
     )

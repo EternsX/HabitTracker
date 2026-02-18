@@ -9,7 +9,7 @@ import textFieldStyles from '../../styles/textFieldStyles';
 
 export default function AddHabit({ addHabit }) {
     const [habitName, setHabitName] = useState('')
-    const selectOptions = [1, 2, 3, 4, 5, 6, 7]
+    const selectOptions = ["Daily", "1", "2", "3", "4", "5", "6"]
     const [frequency, setFrequency] = useState(1)
     const [visibleForm, setVisibleForm] = useState(false)
 

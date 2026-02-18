@@ -14,8 +14,8 @@ const app = express();
 // ====== CORS ======
 // Allow your React app to connect
 app.use(cors({
-  origin: 'http://localhost:5173', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], 
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true // cookies
 }));
 
@@ -32,7 +32,7 @@ const authMiddleware = (req, res, next) => {
   const token = req.cookies.auth_token
   if (!token) {
     return res.status(401).json({ error: 'Not logged in' })
-  } 
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
@@ -116,18 +116,27 @@ app.post('/login', async (req, res) => {
 
 app.get('/habits', authMiddleware, async (req, res) => {
   try {
-    const habits = await Habit.find({userId: req.user.userId});
+    const userIdStr = req.user.userId;
+
+    if (!userIdStr || !mongoose.Types.ObjectId.isValid(userIdStr)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
+
+    const habits = await Habit.find({
+      userId: new mongoose.Types.ObjectId(req.user.userId)
+    });
+    console.log(habits)
     res.json(habits);
   } catch (err) {
+    console.error(err); // log the full error
     res.status(500).json({ error: err.message });
   }
 });
 
 app.post('/habits', authMiddleware, async (req, res) => {
-  console.log(req.user)
+  console.log({...req.body})
   try {
-    const habit = await Habit.create({...req.body, userId: req.user.userId});
-    console.log(habit)
+    const habit = await Habit.create({ ...req.body, userId: new mongoose.Types.ObjectId(req.user.userId) });
     res.status(201).json(habit);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -136,7 +145,7 @@ app.post('/habits', authMiddleware, async (req, res) => {
 
 app.put('/habits/:id', authMiddleware, async (req, res) => {
   try {
-    const habit = await Habit.findOneAndUpdate({_id: req.params.id, userId: req.user.userId}, req.body, { new: true });
+    const habit = await Habit.findOneAndUpdate({ _id: req.params.id, userId: new mongoose.Types.ObjectId(req.user.userId) }, req.body, { new: true });
     res.json(habit);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -145,11 +154,31 @@ app.put('/habits/:id', authMiddleware, async (req, res) => {
 
 app.delete('/habits/:id', authMiddleware, async (req, res) => {
   try {
-    await Habit.findOneAndDelete({_id: req.params.id, userId: req.user.userId});
+    await Habit.findOneAndDelete({ _id: req.params.id, userId: new mongoose.Types.ObjectId(req.user.userId) });
     res.sendStatus(204);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+app.patch('/habits/:id/complete', authMiddleware, async (req, res) => {
+  try {
+    const habit = await Habit.findOne({
+      _id: req.params.id,
+      userId: new mongoose.Types.ObjectId(req.user.userId)
+    });
+
+    if (!habit) {
+      return res.status(404).json({ message: "Habit not found" });
+    }
+
+    habit.completionDates.push(new Date());
+    await habit.save();
+
+    res.json(habit);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+})
 
 app.listen(3001, () => console.log('Server running on port 3001'));

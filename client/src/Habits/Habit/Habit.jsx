@@ -1,65 +1,59 @@
-import { useState } from "react";
+import './Habit.css';
+import Button from '@mui/material/Button'
+import { completionsThisWeek, checkIfCompleted, calculateStreak } from "../../utils/tracker";
+import useHabits from "../../context/Habits/useHabits";
+import HabitOptions from "./HabitOptions/HabitOptions"
 
-export default function Habit ({ h, updateHabit, delHabit }) {
-    const [editingId, setEditingId] = useState(null);
-    const [editingValue, setEditingValue] = useState('')
-    const [editingFrequency, setEditingFrequency] = useState(1)
-    const selectOptions = [1, 2, 3, 4, 5, 6, 7]
+export default function Habit({ h, delHabit }) {
+    const { completeHabit } = useHabits()
+
+    const completions = completionsThisWeek(h?.completionDates ? h.completionDates : [])
+    const isCompleted = checkIfCompleted(h.freq, h.completionDates)
+    const streak = calculateStreak(h.completionDates, h.frequency)
+    const isDaily = h.frequency === 'Daily';
+    const unit = isDaily
+        ? (streak === 1 ? 'Day' : 'Days')
+        : (streak === 1 ? 'Week' : 'Weeks');
 
     const getFrequencyText = (frequency) => {
-            return frequency === 7
-                ? 'Daily'
-                : `${frequency} times per week`
-        }
-    
-        const update = (id, habit, freq) => {
-            if (!habit.trim()) return
-            updateHabit(id, habit, freq)
-            setEditingId(null)
-        }
-    
-    return (
-        <>
-        {editingId === h._id ? (
-                        <>
-                            <input name="habit" onChange={(e) => setEditingValue(e.target.value)} type="text" value={editingValue} />
-                            <select
-                                name="frequency"
-                                value={editingFrequency}
-                                onChange={(e) => setEditingFrequency(Number(e.target.value))}>
-                                {selectOptions.map((option) => (
-                                    <option key={option} value={option}>
-                                        {option}
-                                    </option>
-                                ))}
-                            </select>
-                        </>
-                    ) : (
-                        <>
-                            <span className="habit-name">{h.habit} </span>
-                            <span className="habit-frequency">{getFrequencyText(h.frequency)} </span>
-                        </>
-                    )}
-                    <span className="habit-status">
-                        {h.completed ? 'Done' : 'Not done'}
-                    </span>
+        return frequency === "Daily"
+            ? 'Daily'
+            : `${frequency} times per week`
+    }
 
-                    {editingId === h._id
-                        ?
-                        <>
-                            <button className="delete" onClick={() => delHabit(h._id)}>✖</button>
-                            <button onClick={() => update(h._id, editingValue, editingFrequency)} className='submit-update'>💾</button>
-                            <button onClick={() => setEditingId(null)} className='cancel-update'>C</button>
-                        </>
-                        :
-                        <button className="update"
-                            onClick={() => {
-                                setEditingId(h._id)
-                                setEditingValue(h.habit)
-                                setEditingFrequency(h.frequency)
-                            }}
-                        >✏</button>
+    return (
+        <div className="habits">
+            <span className="habit-name">{h.habit}{" "}</span>
+            <span className="habit-frequency">{getFrequencyText(h.frequency)} </span>
+            <div className="habit-status">
+                {Array.from({ length: h.frequency !== "Daily" ? Number(h.frequency) : 1 }).map((_, i) => (
+                    <div
+                        key={i}
+                        className={`status-bar ${i < completions ? "completed" : ""}`}
+                    ></div>
+                ))}
+            </div>
+
+            <Button
+                disabled={isCompleted}
+                onClick={() => completeHabit(h._id)}
+                sx={{
+                    "&.Mui-disabled": {
+                        color: "#6c8aa3",             // muted blue text
+                        opacity: .7,                   // prevent default faded look
                     }
-        </>
+                }}
+            >
+                {isCompleted ? "Completed" : "Complete"}
+            </Button>
+
+            <span>
+                {streak > 0 ? `${streak} ${unit} Streak` : 'No streak'}
+            </span>
+
+            <HabitOptions h={h} delHabit={delHabit} />
+
+        </div>
     )
 }
+

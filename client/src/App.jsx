@@ -3,11 +3,12 @@ import Navbar from './Navbar/Navbar'
 import Body from './Body'
 import RegisterForm from './Modals/Auth/RegisterModal'
 import LoginForm from './Modals/Auth/LoginModal'
-import AddHabitModal from './Modals/Habits/AddHabitModal'
+import CreateHabitModal from './Modals/Habits/CreateHabitModal'
+import EditHabitModal from './Modals/Habits/EditHabitModal'
 import useModal from './context/Modals/useModal'
 
 function App() {
-  const { registerIsOpen, loginIsOpen, habitModalisOpen } = useModal();
+  const { registerIsOpen, loginIsOpen, createHabitModalIsOpen, editHabitModalIsOpen } = useModal();
 
   return (
     <div className="app">
@@ -16,7 +17,8 @@ function App() {
       
       {registerIsOpen && <RegisterForm />}
       {loginIsOpen && <LoginForm />}
-      {habitModalisOpen && <AddHabitModal />}
+      {createHabitModalIsOpen && <CreateHabitModal />}
+      {editHabitModalIsOpen && <EditHabitModal />}
       
     </div>
 
