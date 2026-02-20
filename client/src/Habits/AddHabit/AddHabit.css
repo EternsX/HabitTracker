@@ -1,33 +1,14 @@
-.wrapper {
+.open-form {
     display: flex;
     flex-direction: column;
-    gap: 9px;
-    /* space between button and form */
-    align-items: flex-end;
-    margin-left: auto;
-    padding-right: 20px;
-}
-
-/* .open-form {
-    margin-right: 10px;
-} */
-
-.habit-form {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
     align-items: center;
+    margin: auto 0 70px 0;
+    
 }
 
-.habit-form.active {
-    display: flex;
-}
-
-.freq {
-    text-align: center;
-}
-
-.inputs {
-    display: flex;
-    gap: 5px;
+.error-container {
+  min-height: 20px;
+  margin-top: 8px;
+  font-size: 13px;
+  text-align: center;
 }

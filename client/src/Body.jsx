@@ -1,23 +1,19 @@
 import Habits from './Habits/Habits'
 import './Body.css'
-import useModal from './context/Modals/useModal'
-import Button from '@mui/material/Button';
+import AddHabit from './Habits/AddHabit/AddHabit';
 
-const buttonStyle = {
-    px: 4,
-    py: 1.5,
-    fontSize: "1.1rem",
-    borderRadius: 3,
-}
 
 export default function Body() {
-    const { openCreateHabitModal } = useModal()
+
+
+
+
     return (
         <div className='body-wrapper'>
             <Habits />
-            <div className="open-form" >
-                <Button sx={buttonStyle} size="large" variant="outlined" onClick={() => openCreateHabitModal(true)}>Add a Habit</Button>
-            </div>
+            <AddHabit />
+
+
         </div>
-    )
+    );
 }

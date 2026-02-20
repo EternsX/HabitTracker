@@ -1,69 +1,57 @@
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
 import './AddHabit.css'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
-import textFieldStyles from '../../styles/textFieldStyles';
+import useUser from '../../context/User/useUser';
+import useModal from '../../context/Modals/useModal';
+import Typography from '@mui/material/Typography';
 
+const buttonStyle = {
+    px: 4,
+    py: 1.5,
+    fontSize: "1.1rem",
+    borderRadius: 3,
+}
 
+export default function AddHabit() {
+    const { openCreateHabitModal } = useModal();
+    const [error, setError] = useState("");
+    const { user } = useUser();
 
-export default function AddHabit({ addHabit }) {
-    const [habitName, setHabitName] = useState('')
-    const selectOptions = ["Daily", "1", "2", "3", "4", "5", "6"]
-    const [frequency, setFrequency] = useState(1)
-    const [visibleForm, setVisibleForm] = useState(false)
+    useEffect(() => {
+        if (user) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setError(""); // clear the error whenever the user logs in
+        }
+    }, [user]);
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        console.log({ habitName, frequency })
-        setHabitName('')
-        setFrequency(1)
-        // Later: call parent onAdd function
-        addHabit(habitName, frequency)
-        setVisibleForm(false);
-    }
+    const handleOpen = () => {
+        if (!user) {
+            setError("You need to log in to create a habit.");
+            return;
+        }
+
+        setError("");
+        openCreateHabitModal(true);
+    };
 
     return (
-        <div className='wrapper'>
-            <Button className="open-form" variant="outlined" onClick={() => setVisibleForm(true)}>Add a Habit</Button>
-            <form onSubmit={handleSubmit} className={`habit-form ${visibleForm ? 'active' : ''} `}>
-                <div className='inputs'>
-                    <TextField
-                        id="habit-name"
-                        value={habitName}
-                        label="Habit Name"
-                        variant="outlined"
-                        onChange={(e) => setHabitName(e.target.value)}
-                        sx={textFieldStyles}
-                    />
-                    <TextField
-                        id="frequency"
-                        select
-                        label="Frequency"
-                        className='freq'
-                        value={frequency}
-                        helperText="Times per Week"
-                        onChange={(e) => setFrequency(Number(e.target.value))}
-                        sx={textFieldStyles}
-                    >
-                        {selectOptions.map((option) => (
-                            <MenuItem key={option} value={option}>
-                                {option}
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </div>
-                <div>
-                <Button variant="contained" type='submit'>add</Button>
-                    <Button
-                        variant="text"
-                        color="secondary"
-                        onClick={() => setVisibleForm(false)}
-                    >
-                        Cancel
-                    </Button>
-                </div>
-            </form>
+        <div className="open-form">
+            <Button
+                sx={buttonStyle}
+                size="large"
+                variant="outlined"
+                onClick={handleOpen}
+            >
+                Add a Habit
+            </Button>
+
+            <div style={{ minHeight: 24, marginTop: 8 }}>
+                {error && (
+                    <Typography variant="caption" color="error">
+                        {error}
+                    </Typography>
+                )}
+            </div>
         </div>
     )
 }

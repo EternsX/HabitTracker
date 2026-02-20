@@ -81,7 +81,7 @@ app.post('/register', async (req, res) => {
 
     res.status(201).json({ message: 'User created' })
   } catch (err) {
-    res.status(400).json({ error: err.message })
+    res.status(400).json({ error: "Usename already exists" })
   }
 })
 
@@ -90,12 +90,12 @@ app.post('/login', async (req, res) => {
 
   const user = await User.findOne({ username })
   if (!user) {
-    return res.status(401).json({ error: 'Invalid credentials' })
+    return res.status(401).json({ error: 'Wrong username or password' })
   }
 
   const match = await bcrypt.compare(password, user.password)
   if (!match) {
-    return res.status(401).json({ error: 'Invalid credentials' })
+    return res.status(401).json({ error: 'Wrong username or password' })
   }
 
   const token = jwt.sign(
@@ -133,8 +133,13 @@ app.get('/habits', authMiddleware, async (req, res) => {
 
 app.post('/habits', authMiddleware, async (req, res) => {
   try {
-    const habit = await Habit.create({ ...req.body, userId: new mongoose.Types.ObjectId(req.user.userId) });
-    res.status(201).json(habit);
+    const { habit, frequency } = req.body;
+
+    if (!habit || !frequency) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+    const newHabit = await Habit.create({ habit, frequency, userId: new mongoose.Types.ObjectId(req.user.userId) });
+    res.status(201).json(newHabit);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -142,8 +147,13 @@ app.post('/habits', authMiddleware, async (req, res) => {
 
 app.put('/habits/:id', authMiddleware, async (req, res) => {
   try {
-    const habit = await Habit.findOneAndUpdate({ _id: req.params.id, userId: new mongoose.Types.ObjectId(req.user.userId) }, req.body, { new: true });
-    res.json(habit);
+    const { habit, frequency } = req.body;
+
+    if (!habit || !frequency) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+    const updatedHabit = await Habit.findOneAndUpdate({ _id: req.params.id, userId: new mongoose.Types.ObjectId(req.user.userId) }, {habit, frequency}, { new: true });
+    res.json(updatedHabit);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -182,7 +192,7 @@ app.patch('/habits/:id/undo', authMiddleware, async (req, res) => {
   try {
     const habit = await Habit.findOne({
       _id: req.params.id,
-      userId: req.user.userId
+      userId: new mongoose.Types.ObjectId(req.user.userId)
     });
 
     if (!habit) {

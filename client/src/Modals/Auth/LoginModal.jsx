@@ -6,13 +6,12 @@ import buttonStyles from '../../styles/buttonStyles';
 import { useState } from 'react';
 import useModal from '../../context/Modals/useModal';
 import useUser from '../../context/User/useUser';
-
-const API_URL = 'http://localhost:3001/login'
-
+import Typography from '@mui/material/Typography';
 
 export default function LoginForm() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
     const { closeLogin } = useModal();
     const { fetchUser } = useUser();
 
@@ -30,11 +29,15 @@ export default function LoginForm() {
 
             const data = await res.json()
             if (!res.ok) {
-                throw new Error(data.error || 'Registration failed')
+                setError(data.error || "Wrong username or password")
+                return
             }
+
+            setError("");
             await fetchUser()
             closeLogin()
         } catch (err) {
+            setError("Something went wrong. Please try again.")
             console.error(err.message)
         }
     }
@@ -72,6 +75,13 @@ export default function LoginForm() {
                     >
                         Login
                     </Button>
+                    <div style={{ minHeight: 24, marginTop: 8 }}>
+                        {error && (
+                            <Typography variant="caption" color="error">
+                                {error}
+                            </Typography>
+                        )}
+                    </div>
                 </form>
             </div>
         </div>

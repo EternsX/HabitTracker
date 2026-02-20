@@ -6,14 +6,15 @@ import buttonStyles from '../../styles/buttonStyles';
 import { useState } from 'react';
 import useModal from '../../context/Modals/useModal';
 import useUser from '../../context/User/useUser';
+import Typography from '@mui/material/Typography';
 
-const API_URL = 'http://localhost:3001/register'
 
 export default function RegisterForm() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const { closeRegister } = useModal();
     const { fetchUser } = useUser();
+    const [error, setError] = useState('')
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -27,8 +28,10 @@ export default function RegisterForm() {
             })
 
             const data = await res.json()
-            if (!res.ok) throw new Error(data.error || 'Registration failed')
-
+            if (!res.ok) {
+                setError(data.error || 'Registration failed')
+                return
+            }
             // 2️⃣ Immediately login
             const loginRes = await fetch('http://localhost:3001/login', {
                 method: 'POST',
@@ -38,13 +41,15 @@ export default function RegisterForm() {
             })
 
             const loginData = await loginRes.json()
-            if (!loginRes.ok) throw new Error(loginData.error || 'Login failed')
-
+            if (!loginRes.ok) {
+                setError(loginData.error || 'Login failed')
+                return
+            }
             // 3️⃣ Update App state
-            await fetchUser() 
+            await fetchUser()
 
             closeRegister()
-            
+
         } catch (err) {
             console.error(err.message)
         }
@@ -84,6 +89,13 @@ export default function RegisterForm() {
                     >
                         Register
                     </Button>
+                    <div style={{ minHeight: 24, marginTop: 8 }}>
+                        {error && (
+                            <Typography variant="caption" color="error">
+                                {error}
+                            </Typography>
+                        )}
+                    </div>
                 </form>
             </div>
         </div>
