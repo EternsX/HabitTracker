@@ -1,39 +1,114 @@
-.habits {
+/* Container for each habit */
+.habit-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    /* allow wrapping on small screens */
+    width: 100%;
+    max-width: 600px;
+    /* desktop limit */
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: #1f3b5a;
+    /* slightly lighter than page */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    margin-bottom: 12px;
+}
+
+/* Left column: habit info */
+.habit-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    /* take available width */
+    /* prevent cramping on mobile */
+    flex: 1;
+    /* takes available width for layout purposes */
+    align-items: flex-start;/
+}
+
+/* Habit text styling */
+.habit-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #f1f5f9;
+}
+
+.habit-frequency,
+.habit-streak {
+    font-size: 13px;
+    color: #d1d5db;
+    /* softer gray */
+}
+
+/* Right column: status + actions */
+.habit-right {
     display: flex;
     align-items: center;
-    width: 600px;
+    gap: 10px;
+    flex-wrap: wrap;
+    /* allows buttons to wrap on small screens */
+    margin-top: 6px;
+    /* small spacing on mobile */
 }
 
-.habit-name {
-    margin-right: 7px;
-}
-
-
+/* Progress bars */
 .habit-status {
     display: flex;
-    border: 1px solid black;
-    margin-left: auto;
-    border-radius: 10px;
-    height: 6px;
-    align-self: center;
-    position: relative;
-    top: 2px;
-    overflow: hidden;   
-    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: #374151;
+    /* incomplete bars */
+    height: 8px;
 }
-
 
 .status-bar {
-    display: inline;
     width: 18px;
-    border-right: 1px solid black;
+    border-right: 1px solid #5c5f65;
+    background: #374151;
 }
 
-.status-bar:last-of-type {
+.status-bar:last-child {
     border-right: none;
 }
 
 .status-bar.completed {
-    background-color: rgb(23, 107, 23);
+    background-color: #22c55e;
+    /* bright green for completed */
 }
 
+/* Hover effect (desktop only) */
+@media (hover: hover) {
+    .habit-card:hover {
+        border-color: #4b6cb7;
+        transform: translateY(-1px);
+        transition: 0.15s;
+    }
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 480px) {
+    .habit-card {
+        padding: 10px 12px;
+    }
+
+    .habit-name {
+        font-size: 14px;
+    }
+
+    .habit-frequency,
+    .habit-streak {
+        font-size: 12px;
+    }
+
+    .status-bar {
+        width: 14px;
+    }
+
+    .habit-right {
+        gap: 6px;
+    }
+}

@@ -5,3 +5,7 @@ body {
   color: rgb(214, 209, 209);
 
 }
+
+* {
+  box-sizing: border-box;
+}

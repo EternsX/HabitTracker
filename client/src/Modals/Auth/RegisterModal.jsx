@@ -7,7 +7,7 @@ import { useState } from 'react';
 import useModal from '../../context/Modals/useModal';
 import useUser from '../../context/User/useUser';
 import Typography from '@mui/material/Typography';
-
+import { API_URL } from '../../api/api';
 
 export default function RegisterForm() {
     const [username, setUsername] = useState('')
@@ -21,7 +21,7 @@ export default function RegisterForm() {
 
         try {
             // 1️⃣ Register user
-            const res = await fetch('http://localhost:3001/register', {
+            const res = await fetch(`${API_URL}/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
@@ -33,7 +33,7 @@ export default function RegisterForm() {
                 return
             }
             // 2️⃣ Immediately login
-            const loginRes = await fetch('http://localhost:3001/login', {
+            const loginRes = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

@@ -7,6 +7,7 @@ import { useState } from 'react';
 import useModal from '../../context/Modals/useModal';
 import useUser from '../../context/User/useUser';
 import Typography from '@mui/material/Typography';
+import { API_URL } from '../../api/api';
 
 export default function LoginForm() {
     const [username, setUsername] = useState('')
@@ -19,7 +20,7 @@ export default function LoginForm() {
         e.preventDefault();
 
         try {
-            const res = await fetch('http://localhost:3001/login', {
+            const res = await fetch(`${API_URL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include', // 👈 REQUIRED

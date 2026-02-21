@@ -8,29 +8,36 @@ export default function Habit({ h, delHabit }) {
     const completions = completionsThisWeek(h?.completionDates ? h.completionDates : [])
     const streak = calculateStreak(h.completionDates, h.frequency)
     const { getFrequencyText, unit } = habitFormatters(h.frequency, streak)
-    
+
 
     return (
-        <div className="habits">
-            <span className="habit-name">{h.habit}{" "}</span>
-            <span className="habit-frequency">{getFrequencyText(h.frequency)} </span>
-            <div className="habit-status">
-                {Array.from({ length: h.frequency !== "Daily" ? Number(h.frequency) : 1 }).map((_, i) => (
-                    <div
-                        key={i}
-                        className={`status-bar ${i < completions ? "completed" : ""}`}
-                    ></div>
-                ))}
+        <div className="habit-card">
+            <div className="habit-info">
+                <span className="habit-name">{h.habit}</span>
+                <span className="habit-frequency">
+                    {getFrequencyText(h.frequency)}
+                </span>
+
+                <span className="habit-streak">
+                    {streak > 0 ? `${streak} ${unit} streak` : "No streak"}
+                </span>
             </div>
-                
-            <HabitActionButton h={h} />
 
-            <span>
-                {streak > 0 ? `${streak} ${unit} Streak` : 'No streak'}
-            </span>
+            <div className="habit-right">
+                <div className="habit-status">
+                    {Array.from({
+                        length: h.frequency !== "Daily" ? Number(h.frequency) : 1
+                    }).map((_, i) => (
+                        <div
+                            key={i}
+                            className={`status-bar ${i < completions ? "completed" : ""}`}
+                        />
+                    ))}
+                </div>
 
-            <HabitOptions h={h} delHabit={delHabit} />
-
+                <HabitActionButton h={h} />
+                <HabitOptions h={h} delHabit={delHabit} />
+            </div>
         </div>
     )
 }

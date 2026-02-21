@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import UserContext from "./UserContext";
+import { API_URL } from "../../api/api";
 
 export default function UserProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -8,11 +9,19 @@ export default function UserProvider({ children }) {
   const fetchUser = async () => {
     setLoading(true); // start loading
     try {
-      const res = await fetch('http://localhost:3001/me', { credentials: 'include' });
+      const res = await fetch(`${API_URL}/me`, { credentials: 'include' });
       if (!res.ok) {
         setUser(null);
         return;
       }
+      const contentType = res.headers.get("content-type");
+
+      if (!contentType || !contentType.includes("application/json")) {
+        console.error("Response is not JSON");
+        setUser(null);
+        return;
+      } 
+
       const data = await res.json();
       setUser(data.user);
     } catch (err) {
@@ -28,7 +37,7 @@ export default function UserProvider({ children }) {
   }, []); // empty dependency array, not [user]
 
   const logout = async () => {
-    await fetch('http://localhost:3001/logout', { method: 'POST', credentials: 'include' });
+    await fetch(`${API_URL}/logout`, { method: 'POST', credentials: 'include' });
     setUser(null);
   }
 

@@ -14,7 +14,7 @@ const app = express();
 // ====== CORS ======
 // Allow your React app to connect
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173', 'http://192.168.178.31:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true // cookies
 }));
@@ -45,6 +45,7 @@ const authMiddleware = (req, res, next) => {
 
 // ====== Routes ======
 app.get('/me', (req, res) => {
+
   const token = req.cookies.auth_token
   if (!token) {
     return res.json({ user: null })
@@ -152,7 +153,7 @@ app.put('/habits/:id', authMiddleware, async (req, res) => {
     if (!habit || !frequency) {
       return res.status(400).json({ error: "Missing fields" });
     }
-    const updatedHabit = await Habit.findOneAndUpdate({ _id: req.params.id, userId: new mongoose.Types.ObjectId(req.user.userId) }, {habit, frequency}, { new: true });
+    const updatedHabit = await Habit.findOneAndUpdate({ _id: req.params.id, userId: new mongoose.Types.ObjectId(req.user.userId) }, { habit, frequency }, { new: true });
     res.json(updatedHabit);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -212,4 +213,6 @@ app.patch('/habits/:id/undo', authMiddleware, async (req, res) => {
   }
 });
 
-app.listen(3001, () => console.log('Server running on port 3001'));
+app.listen(3001, '0.0.0.0', () =>
+  console.log('Server running on port 3001')
+);

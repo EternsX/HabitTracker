@@ -1,8 +1,7 @@
 import useUser from "../User/useUser.js";
 import { useState, useEffect, useCallback } from "react";
 import HabitsContext from "./HabitsContext.js";
-
-const API_URL = "http://localhost:3001/habits";
+import { API_URL } from "../../api/api.js";
 
 
 export function HabitsProvider({ children }) {
@@ -18,7 +17,7 @@ export function HabitsProvider({ children }) {
     }
 
     const fetchHabits = async () => {
-      const res = await fetch(API_URL, {
+      const res = await fetch(`${API_URL}/habits`, {
         credentials: "include",
       });
 
@@ -36,24 +35,23 @@ export function HabitsProvider({ children }) {
   }, [user?.userId, loading]);
 
   const delHabit = useCallback(async (id) => {
-    await fetch(`${API_URL}/${id}`, { method: "DELETE", credentials: "include" });
+    await fetch(`${API_URL}/habits/${id}`, { method: "DELETE", credentials: "include" });
     setHabits(prev => prev.filter(h => h._id !== id));
   }, []);
 
   const addHabit = useCallback(async (habit, frequency) => {
-    const res = await fetch(API_URL, {
+    const res = await fetch(`${API_URL}/habits`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({ habit, frequency, completed: false }),
     });
     const newHabit = await res.json();
-    console.log(newHabit)
     setHabits(prev => [...prev, newHabit]);
   }, []);
 
   const updateHabit = useCallback(async (id, habit, frequency) => {
-    const res = await fetch(`${API_URL}/${id}`, {
+    const res = await fetch(`${API_URL}/habits/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -64,7 +62,7 @@ export function HabitsProvider({ children }) {
   }, []);
 
   const completeHabit = useCallback(async (id) => {
-    const res = await fetch(`${API_URL}/${id}/complete`, {
+    const res = await fetch(`${API_URL}/habits/${id}/complete`, {
       method: "PATCH",
       credentials: "include",
     });
@@ -79,7 +77,7 @@ export function HabitsProvider({ children }) {
   }, []);
 
   const undoComplete = useCallback(async (id) => {
-    const res = await fetch(`${API_URL}/${id}/undo`, {
+    const res = await fetch(`${API_URL}/habits/${id}/undo`, {
       method: "PATCH",
       credentials: "include",
     });
