@@ -1,7 +1,8 @@
 import './AddHabit.css'
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import Button from '@mui/material/Button';
 import useUser from '../../context/User/useUser';
+import useHabits from '../../context/Habits/useHabits';
 import useModal from '../../context/Modals/useModal';
 import Typography from '@mui/material/Typography';
 
@@ -14,7 +15,7 @@ const buttonStyle = {
 
 export default function AddHabit() {
     const { openCreateHabitModal } = useModal();
-    const [error, setError] = useState("");
+    const { error, setError }  = useHabits();
     const { user } = useUser();
 
     useEffect(() => {

@@ -10,7 +10,7 @@ export default function Habits() {
         <>
             {user ?  
                 habits.map(h =>
-                        <Habit h={h} delHabit={delHabit} />
+                        <Habit key={h._id} h={h} delHabit={delHabit} />
                 )
             : 
                 <p></p>

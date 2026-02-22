@@ -7,6 +7,7 @@ import { API_URL } from "../../api/api.js";
 export function HabitsProvider({ children }) {
   const [habits, setHabits] = useState([]);
   const [editingId, setEditingId] = useState(null)
+  const [error, setError] = useState("");
   const { user, loading } = useUser();
   useEffect(() => {
     if (loading) return;
@@ -21,12 +22,14 @@ export function HabitsProvider({ children }) {
         credentials: "include",
       });
 
+      const data = await res.json();
+
       if (!res.ok) {
         setHabits([]);
+        setError(data.error || "Failed to Load Habits")
         return;
       }
 
-      const data = await res.json();
 
       setHabits(data);
     };
@@ -35,8 +38,13 @@ export function HabitsProvider({ children }) {
   }, [user?.userId, loading]);
 
   const delHabit = useCallback(async (id) => {
-    await fetch(`${API_URL}/habits/${id}`, { method: "DELETE", credentials: "include" });
-    setHabits(prev => prev.filter(h => h._id !== id));
+    try {
+
+      await fetch(`${API_URL}/habits/${id}`, { method: "DELETE", credentials: "include" });
+      setHabits(prev => prev.filter(h => h._id !== id));
+    } catch {
+      setError("Failed to delete Habit")
+    }
   }, []);
 
   const addHabit = useCallback(async (habit, frequency) => {
@@ -46,8 +54,15 @@ export function HabitsProvider({ children }) {
       credentials: "include",
       body: JSON.stringify({ habit, frequency, completed: false }),
     });
-    const newHabit = await res.json();
-    setHabits(prev => [...prev, newHabit]);
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || "Failed to complete habit");
+      return;
+    }
+
+    setHabits(prev => [...prev, data]);
   }, []);
 
   const updateHabit = useCallback(async (id, habit, frequency) => {
@@ -57,8 +72,15 @@ export function HabitsProvider({ children }) {
       credentials: "include",
       body: JSON.stringify({ habit, frequency }),
     });
-    const updatedHabit = await res.json();
-    setHabits(prev => prev.map(h => (h._id === id ? updatedHabit : h)));
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      setError(data.error || "Failed to update habit");
+      return;
+    }
+
+    setHabits(prev => prev.map(h => (h._id === id ? data : h)));
   }, []);
 
   const completeHabit = useCallback(async (id) => {
@@ -67,13 +89,14 @@ export function HabitsProvider({ children }) {
       credentials: "include",
     });
 
+    const data = await res.json()
+
     if (!res.ok) {
-      console.error("Failed to complete habit");
+      setError(data.error || "Failed to complete habit");
       return;
     }
 
-    const completedHabit = await res.json();
-    setHabits(prev => prev.map(h => (h._id) === id ? completedHabit : h))
+    setHabits(prev => prev.map(h => (h._id) === id ? data : h))
   }, []);
 
   const undoComplete = useCallback(async (id) => {
@@ -82,21 +105,22 @@ export function HabitsProvider({ children }) {
       credentials: "include",
     });
 
+    const data = await res.json()
+
     if (!res.ok) {
-      console.error("Failed to undo habit");
+      setError(data.error || "Failed to undo habit");
       return;
     }
 
-    const updatedHabit = await res.json();
 
     setHabits(prev =>
-      prev.map(h => h._id === id ? updatedHabit : h)
+      prev.map(h => h._id === id ? data : h)
     );
   }, []);
 
   return (
     <HabitsContext.Provider
-      value={{ user, habits, addHabit, delHabit, updateHabit, completeHabit, undoComplete, editingId, setEditingId }}
+      value={{ user, habits, addHabit, delHabit, updateHabit, completeHabit, undoComplete, editingId, setEditingId, error, setError }}
     >
       {children}
     </HabitsContext.Provider>

@@ -16,7 +16,6 @@ export default function CreateHabitModal() {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log({ habitName, frequency })
         addHabit(habitName, frequency)
         setHabitName('')
         setFrequency('')
@@ -30,7 +29,6 @@ export default function CreateHabitModal() {
                     <div className='inputs'>
                         <TextField
                             id="habit-name"
-                            displayEmpty
                             value={habitName}
                             label="Habit Name"
                             variant="outlined"
@@ -41,7 +39,6 @@ export default function CreateHabitModal() {
                             select
                             label="Frequency"
                             value={frequency}
-                            displayEmpty
                             onChange={(e) => {
                                 const value = e.target.value;
                                 setFrequency(value === "Daily" ? "Daily" : Number(value));
@@ -49,9 +46,6 @@ export default function CreateHabitModal() {
                             helperText="Times per Week"
                             sx={textFieldStyles}
                         >
-                            <MenuItem value="" disabled>
-                                <em>Select frequency</em>
-                            </MenuItem>
                             {selectOptions.map((option) => (
                                 <MenuItem key={option} value={option}>
                                     {option}

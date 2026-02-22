@@ -142,7 +142,18 @@ app.post('/habits', authMiddleware, async (req, res) => {
     const newHabit = await Habit.create({ habit, frequency, userId: new mongoose.Types.ObjectId(req.user.userId) });
     res.status(201).json(newHabit);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (err.code === 11000) {
+      return res.status(400).json({
+        error: "You already have a habit with this name."
+      });
+    }
+   if (err.name === "ValidationError") {
+      return res.status(400).json({
+        error: err.message
+      });
+    }
+
+    res.status(500).json({ error: "Server error" });
   }
 });
 
